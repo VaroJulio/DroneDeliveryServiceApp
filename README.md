@@ -37,7 +37,9 @@ To distribute the wegiths in a trip, we need to start with the normal values, th
 ## Technical Dependencies and Libraries
 
 >## DroneDeliveryServiceApp
-It's a console apllication wich target framework is .Net 6. The app was developed using visual studio 2022. It includes DroneDeliveryLibrary as a dependency.
+It's a console apllication wich target framework is .Net Framework 4.5. The app was developed using visual studio 2022. It includes DroneDeliveryLibrary as a dependency.
 
 >## DroneDeliveryLibrary
-It's a custom clase library wich target framework is .Net Standard 2.0. The library was developed using visual studio 2022.
+It's a custom clase library wich target framework is .Net Framework 4.5. The library was developed using visual studio 2022.
+
+You can upgrade the target framework of this library to .Net Standard 2.0 for getting a cross platform portability.
