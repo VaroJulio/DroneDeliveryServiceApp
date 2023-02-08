@@ -4,8 +4,11 @@
     {
         public static string Remove(this string theString, string[] stringListToRemove)
         {
-            foreach (var character in stringListToRemove)
-                theString = theString.Replace(character, null);
+            if (stringListToRemove.Length > 0)
+            {
+                foreach (var character in stringListToRemove)
+                    theString = theString.Replace(character, null);
+            }
 
             return theString;
         }

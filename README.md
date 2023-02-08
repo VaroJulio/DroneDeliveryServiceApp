@@ -1,6 +1,6 @@
 # DroneDeliveryServiceApp
 
-### Problem
+## Problem
 A squad of drones is tasked with delivering packages for a major online reseller in a world 
 where time and distance do not matter. Each drone can carry a specific weight and can make 
 multiple deliveries before returning to home base to pick up additional loads; however, the goal 
@@ -17,7 +17,7 @@ each package is also irrelevant. It is also assumed that the cost to refuel and 
 drone is a constant and does not vary between drones. The maximum number of drones in a 
 squad is 100, and there is no maximum number of deliveries which are required.
 
-### Solution
+## Solution
 An statistic aproach was used to solve the problem. 
 
 First, the drones and locations data needs to be ordered ascending.
@@ -34,13 +34,10 @@ Fourth, the charge is distributed trying to reach the maximun weigth capacity of
 
 To distribute the wegiths in a trip, we need to start with the normal values, then we follow with the atypical lowest values and finally we took the atypical highest values.
 
-### Technical Dependencies and Libraries
+## Technical Dependencies and Libraries
 
-##### DroneDeliveryServiceApp
+>## DroneDeliveryServiceApp
 It's a console apllication wich target framework is .Net 6. The app was developed using visual studio 2022. It includes DroneDeliveryLibrary as a dependency.
 
-##### DroneDeliveryLibrary
-It's a custom clase library wich target framework is .Net Standard 2.0. The library was developed using visual studio 2022. 
-
-
-
+>## DroneDeliveryLibrary
+It's a custom clase library wich target framework is .Net Standard 2.0. The library was developed using visual studio 2022.

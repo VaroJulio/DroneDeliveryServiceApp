@@ -24,9 +24,9 @@ namespace DroneDeliveryLibrary.Core
         public async Task<List<KeyValuePair<string, IEnumerable<Location>>>> CalculateDeliveries()
         {
             var data = await ExtractDeliveriesDataFromFileAsync();
-            data.Item2 = RemoveLocationsExceedDroneMaxWeigth(data.Item2, data.Item1.Max(x => x.Weight));
-            var parameters = CalculatePercentiles(data.Item2);
-            var result = CalculateTrips(parameters, data.Item1);
+            data.LocationList = RemoveLocationsExceedDroneMaxWeigth(data.LocationList, data.DroneList.Max(x => x.Weight));
+            var parameters = CalculatePercentiles(data.LocationList);
+            var result = CalculateTrips(parameters, data.DroneList);
             return result;
         }
 
@@ -36,50 +36,63 @@ namespace DroneDeliveryLibrary.Core
             var fileStream = new FileStream(fileName, FileMode.OpenOrCreate);
             deliveries = deliveries.OrderBy(x => x.Key).ToList();
             var distinctDrones = deliveries.Select(x => x.Key).Distinct().ToList();
-            using (StreamWriter writer = new StreamWriter(fileStream, Encoding.UTF8))
+            if (deliveries.Count() > 0 && distinctDrones.Count() > 0)
             {
-                foreach (var item in distinctDrones)
+                using (StreamWriter writer = new StreamWriter(fileStream, Encoding.UTF8))
                 {
-                    var droneTrips = deliveries.Where(x => x.Key == item).ToList();
-                    var numberTrip = 1;
-                    await writer.WriteAsync($"[{item}]\n\r\n\r");
-                    foreach (var trip in droneTrips)
+                    foreach (var item in distinctDrones)
                     {
-                        await writer.WriteAsync($"Trip #{numberTrip}\n\r\n\r");
-                        foreach (var location in trip.Value)
+                        var droneTrips = deliveries.Where(x => x.Key == item).ToList();
+                        var numberTrip = 1;
+                        await writer.WriteAsync($"[{item}]\n\r\n\r");
+                        if (droneTrips.Count() > 0)
                         {
-                            if (location.Name == trip.Value.Last().Name)
-                                await writer.WriteAsync($"{location.Name}");
-                            else
-                                await writer.WriteAsync($"{location.Name},");
+                            foreach (var trip in droneTrips)
+                            {
+                                await writer.WriteAsync($"Trip #{numberTrip}\n\r\n\r");
+                                foreach (var location in trip.Value)
+                                {
+                                    if (location.Name == trip.Value.Last().Name)
+                                        await writer.WriteAsync($"{location.Name}");
+                                    else
+                                        await writer.WriteAsync($"{location.Name},");
+                                }
+                                await writer.WriteAsync($"\n\r\n\r");
+                                numberTrip++;
+                            }
                         }
-                        await writer.WriteAsync($"\n\r\n\r");
-                        numberTrip++;
                     }
                 }
             }
+            else
+            {
+                throw new Exception("There are no data to save into a file.");
+            }
         }
 
-        private async Task<(List<Drone>, List<Location>)> ExtractDeliveriesDataFromFileAsync()
+        //private async Task<(List<Drone>, List<Location>)> ExtractDeliveriesDataFromFileAsync()
+        private async Task<DeliveryData> ExtractDeliveriesDataFromFileAsync()
         {
             List<Drone> droneList = new List<Drone>();
             List<Location> locationList = new List<Location>();
             int lineCount = 0;
 
-            using (var reader = new StreamReader(Path.Combine(Directory.GetCurrentDirectory(), "deliveries.txt")))
+            //using (var reader = new StreamReader(Path.Combine(Directory.GetCurrentDirectory(), "deliveries.txt")))
+            using (var reader = File.OpenText(Path.Combine(Directory.GetCurrentDirectory(), "deliveries.txt")))
             {
                 string line;
                 while ((line = await reader.ReadLineAsync()) != null)
                 {
                     var listOfStringsToRemove = "[,]".Split(',');
-                    line = line.Remove(listOfStringsToRemove);
+                    if (listOfStringsToRemove.Length > 0)
+                        line = line.Remove(listOfStringsToRemove);
 
                     if (lineCount == 0)
                     {
                         _validator.ValidateMissingDeliveryData(line, DeliveryEntities.Drone);
                         var data = line.Split(',');
                         _validator.EvaluateIfIsPairDataList(data, DeliveryEntities.Drone);
-                        for (int index = 0; index < data?.Length; index += 2)
+                        for (int index = 0; index < data.Length; index += 2)
                         {
                             var drone = new Drone()
                             {
@@ -107,7 +120,7 @@ namespace DroneDeliveryLibrary.Core
 
             droneList = droneList.OrderBy(x => x.Weight).ThenBy(x => x.Name).ToList();
             locationList = locationList.OrderBy(x => x.Weight).ThenBy(x => x.Name).ToList();
-            return (droneList, locationList);
+            return new DeliveryData() { DroneList = droneList, LocationList = locationList };
         }
 
         private List<Location> RemoveLocationsExceedDroneMaxWeigth(List<Location> locations, double droneMaxWeigth)
@@ -151,7 +164,7 @@ namespace DroneDeliveryLibrary.Core
                         }
                         var weigthRelationCleaned = weigthRelation.Where(x => x.Key <= 1).ToList().OrderBy(x => x.Key).ThenBy(x => x.Value);
                         var bestDroneIndex = weigthRelationCleaned.LastOrDefault().Value;
-                        var dataItem = new KeyValuePair<string, IEnumerable<Location>>(drones[bestDroneIndex].Name ?? "", trip);
+                        var dataItem = new KeyValuePair<string, IEnumerable<Location>>(drones[bestDroneIndex].Name ?? "Empty", trip);
                         deliveries.Add(dataItem);
                     }
                 }

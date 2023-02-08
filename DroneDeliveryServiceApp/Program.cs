@@ -1,7 +1,6 @@
 ﻿using DroneDeliveryLibrary.Core;
 using System;
 using System.IO;
-using System.Threading;
 
 namespace DroneDeliveryServiceApp
 {
@@ -62,8 +61,8 @@ namespace DroneDeliveryServiceApp
             if (continueKey.ToUpper() != "N" && continueKey.ToUpper() != "Y")
             {
                 Console.Clear();
-                Console.WriteLine("Invalid answer.");
-                Thread.Sleep(2000);
+                Console.WriteLine("Invalid answer. Press any key to econtinue.");
+                Console.ReadKey();
                 StartApp(ref continueKey);
             }
         }

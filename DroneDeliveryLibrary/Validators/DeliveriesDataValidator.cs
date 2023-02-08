@@ -10,7 +10,7 @@ namespace DroneDeliveryLibrary.Validators
     {
         public void EvaluateIfIsPairDataList(IEnumerable<string> data, DeliveryEntities kindOfEntity)
         {
-            if (data.Count() % 2 != 0)
+            if (data.Count() > 0 && data.Count() % 2 != 0)
                 throw new FileFormatCustomException($"A {kindOfEntity}´s name or weigth is missing.");
         }
 
