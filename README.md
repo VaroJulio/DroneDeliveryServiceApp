@@ -26,9 +26,9 @@ Second, remove all the locations from the input data with a weight that exceeds 
 
 Thrid, group the location data into three parts:
 
-1. From percentile 1 to 20: Atypical lowest values.
-2. From percentile 21 to 80: Normal values.
-3. From percentile 81 to 100: Atypical highest values.
+1. From percentile 0 to 19: Atypical lowest values.
+2. From percentile 20 to 79: Normal values.
+3. From percentile 80 to 99: Atypical highest values.
 
 Fourth, distribute the charge and try to occupy the maximum weight capacity the biggest drone can carry. Then the relation between the trip weight and the drone weight capacity is calculated for each drone. This method allows us to choose the correct drone (the drone with the closest relation to 1, but never over 1).
 
